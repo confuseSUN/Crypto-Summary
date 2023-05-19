@@ -8,12 +8,20 @@ use sha2::Sha256;
 use std::ops::Neg;
 use std::ops::{Add, Div, Mul};
 
-use super::HashToCurve;
+use super::sw_map::HashToCurve;
 
 pub struct Secp256K1SWMap;
 
 impl HashToCurve<ark_secp256k1::Config> for Secp256K1SWMap {
     const Z: Fq = MontFp!("1");
+
+    const C1 : Option<Fq> = None;
+
+    const C2 : Option<Fq> = None;
+
+    const C3 : Option<Fq> = None;
+
+    const C4 : Option<Fq> = None;
 
     const DST: &'static [u8] = b"secp256k1";
 }

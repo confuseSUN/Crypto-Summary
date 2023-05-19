@@ -7,7 +7,7 @@ use ark_ff::{
 use ark_serialize::CanonicalSerialize;
 use ark_std::rand::Rng;
 use ark_std::UniformRand;
-use elliptic_curve::hash_to_curve::HashToCurve;
+use elliptic_curve::hash_to_curve::sw_map::HashToCurve;
 use proof::VRFProof;
 use sha2::{digest::DynDigest, Sha256};
 use std::{ops::*, vec};
@@ -15,7 +15,7 @@ use std::{ops::*, vec};
 #[cfg(test)]
 mod tests;
 
-mod proof;
+pub mod proof;
 
 #[derive(Clone, Default)]
 pub struct KeyPair<P: SWCurveConfig> {
