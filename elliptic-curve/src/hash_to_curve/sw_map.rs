@@ -18,16 +18,16 @@ pub trait HashToCurve<P: SWCurveConfig> {
     /// 4. at least one of g(Z) and g(-Z / 2) is square
     const Z: P::BaseField;
 
-    /// The constant c2
+    /// The constant c1
     const C1: Option<P::BaseField>;
 
     /// The constant c2
     const C2: Option<P::BaseField>;
 
-    /// The constant c2
+    /// The constant c3
     const C3: Option<P::BaseField>;
 
-    /// The constant c2
+    /// The constant c4
     const C4: Option<P::BaseField>;
 
     /// Domain separation
@@ -80,7 +80,7 @@ pub trait HashToCurve<P: SWCurveConfig> {
             return Ok(point_on_curve);
         }
 
-        Err("faile to hash to curve".to_string())
+        Err("failed to hashing to the curve".to_string())
     }
 
     /// Mapping an arbitrary message to a field element,

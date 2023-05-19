@@ -4,26 +4,9 @@ use ark_ec::{AffineRepr, Group};
 use ark_ff::MontFp;
 use ark_secp256k1::Fq;
 use ark_std::test_rng;
-use elliptic_curve::hash_to_curve::sw_map::HashToCurve;
+use elliptic_curve::hash_to_curve::{sw_map::HashToCurve, secp256K1_sw::Secp256K1SWMap};
 
 use crate::KeyPair;
-
-pub struct Secp256K1SWMap;
-
-impl HashToCurve<ark_secp256k1::Config> for Secp256K1SWMap {
-    const Z: Fq = MontFp!("1");
-
-    const C1 : Option<Fq> = None;
-
-    const C2 : Option<Fq> = None;
-
-    const C3 : Option<Fq> = None;
-    
-    const C4 : Option<Fq> = None;
-
-
-    const DST: &'static [u8] = b"secp256k1";
-}
 
 #[test]
 fn tset_generate_key_pair() {

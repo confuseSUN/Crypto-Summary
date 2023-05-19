@@ -8,23 +8,9 @@ use sha2::Sha256;
 use std::ops::Neg;
 use std::ops::{Add, Div, Mul};
 
-use super::sw_map::HashToCurve;
+use crate::hash_to_curve::secp256K1_sw::Secp256K1SWMap;
+use crate::hash_to_curve::sw_map::HashToCurve;
 
-pub struct Secp256K1SWMap;
-
-impl HashToCurve<ark_secp256k1::Config> for Secp256K1SWMap {
-    const Z: Fq = MontFp!("1");
-
-    const C1 : Option<Fq> = None;
-
-    const C2 : Option<Fq> = None;
-
-    const C3 : Option<Fq> = None;
-
-    const C4 : Option<Fq> = None;
-
-    const DST: &'static [u8] = b"secp256k1";
-}
 
 #[test]
 fn test_hash_to_curve_for_secp256k1() {
