@@ -35,23 +35,23 @@ pub trait SWMap<P: SWCurveConfig> {
 
     /// Mapping an arbitrary field element to a point on the elliptic curve,
     /// This step matching step 2 and step 3
-    fn map_to_curve(point: &P::BaseField) -> Result<Affine<P>, String> {
+    fn map_to_curve(u: &P::BaseField) -> Result<Affine<P>, String> {
         let a: P::BaseField = P::COEFF_A;
         let b: P::BaseField = P::COEFF_B;
 
-        let tv1: P::BaseField = point.mul(point).mul(&Self::c1());
+        let tv1: P::BaseField = u.square().mul(&Self::c1());
         let tv2: P::BaseField = P::BaseField::ONE.add(&tv1);
         let tv1: P::BaseField = P::BaseField::ONE.sub(&tv1);
         let tv3: P::BaseField = tv1.mul(&tv2);
         let tv3: P::BaseField = tv3.inverse().unwrap();
-        let tv4: P::BaseField = point.mul(&tv1).mul(&tv3).mul(&Self::c3());
+        let tv4: P::BaseField = u.mul(&tv1).mul(&tv3).mul(&Self::c3());
 
         let x1: P::BaseField = Self::c2().sub(&tv4);
         let gx1: P::BaseField = x1.square().add(&a);
         let gx1: P::BaseField = gx1.mul(&x1).add(&b);
         if gx1.legendre().is_qr() {
             let y: P::BaseField = gx1.sqrt().unwrap();
-            let y: P::BaseField = if parity(&y) != parity(point) { -y } else { y };
+            let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
             let point_on_curve = Affine::<P>::new_unchecked(x1, y);
             assert!(point_on_curve.is_on_curve());
             return Ok(point_on_curve);
@@ -62,7 +62,7 @@ pub trait SWMap<P: SWCurveConfig> {
         let gx2: P::BaseField = gx2.mul(&x2).add(&b);
         if gx2.legendre().is_qr() {
             let y: P::BaseField = gx2.sqrt().unwrap();
-            let y: P::BaseField = if parity(&y) != parity(point) { -y } else { y };
+            let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
             let point_on_curve = Affine::<P>::new_unchecked(x2, y);
             assert!(point_on_curve.is_on_curve());
             return Ok(point_on_curve);
@@ -74,7 +74,7 @@ pub trait SWMap<P: SWCurveConfig> {
         let gx3: P::BaseField = gx3.mul(&x3).add(&b);
         if gx3.legendre().is_qr() {
             let y: P::BaseField = gx3.sqrt().unwrap();
-            let y: P::BaseField = if parity(&y) != parity(point) { -y } else { y };
+            let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
             let point_on_curve = Affine::<P>::new_unchecked(x3, y);
             assert!(point_on_curve.is_on_curve());
             return Ok(point_on_curve);

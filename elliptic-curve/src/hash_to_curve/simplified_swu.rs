@@ -30,10 +30,10 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
 
     /// Mapping an arbitrary field element to a point on the elliptic curve,
     /// This step matching step 2 and step 3
-    fn map_to_curve(point: &P::BaseField) -> Result<Affine<P>, String> {
+    fn map_to_curve(u: &P::BaseField) -> Result<Affine<P>, String> {
         let one: P::BaseField = P::BaseField::one();
 
-        let p2_mul_z: P::BaseField = point.square().mul(&Self::Z);
+        let p2_mul_z: P::BaseField = u.square().mul(&Self::Z);
         let p4_mul_z2: P::BaseField = p2_mul_z.square();
         let tv1: P::BaseField = p2_mul_z.add(&p4_mul_z2);
         let tv1: P::BaseField = tv1.inverse().unwrap();
@@ -43,7 +43,7 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
         let gx1: P::BaseField = gx1.mul(&x1).add(&Self::B);
         if gx1.legendre().is_qr() {
             let y: P::BaseField = gx1.sqrt().unwrap();
-            let y: P::BaseField = if parity(&y) != parity(point) { -y } else { y };
+            let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
             let point = Self::isogeny_map(&x1, &y);
             return Ok(point);
         }
@@ -53,7 +53,7 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
         let gx2: P::BaseField = gx2.mul(&x2).add(&Self::B);
         if gx2.legendre().is_qr() {
             let y: P::BaseField = gx2.sqrt().unwrap();
-            let y: P::BaseField = if parity(&y) != parity(point) { -y } else { y };
+            let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
             let point = Self::isogeny_map(&x2, &y);
             return Ok(point);
         }
