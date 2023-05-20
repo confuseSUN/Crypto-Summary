@@ -7,7 +7,7 @@ use ark_ff::{
 use ark_serialize::CanonicalSerialize;
 use ark_std::rand::Rng;
 use ark_std::UniformRand;
-use elliptic_curve::hash_to_curve::sw_map::HashToCurve;
+use elliptic_curve::hash_to_curve::sw_map::SWMap;
 use proof::VRFProof;
 use sha2::{digest::DynDigest, Sha256};
 use std::{ops::*, vec};
@@ -36,7 +36,7 @@ impl<P: SWCurveConfig> KeyPair<P> {
     }
 
     // Verifiable Random Function
-    fn vrf<H: HashToCurve<P>, R: Rng>(&self, seed: &[u8], prng: &mut R) -> VRFProof<P> {
+    fn vrf<H: SWMap<P>, R: Rng>(&self, seed: &[u8], prng: &mut R) -> VRFProof<P> {
         let mut buf = Vec::new();
         self.public_key.serialize_uncompressed(&mut buf).unwrap();
         buf.extend_from_slice(seed);

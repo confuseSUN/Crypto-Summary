@@ -2,7 +2,7 @@ use std::ops::{Add, Mul};
 
 use ark_ec::short_weierstrass::{Projective, SWCurveConfig};
 use ark_serialize::CanonicalSerialize;
-use elliptic_curve::hash_to_curve::sw_map::HashToCurve;
+use elliptic_curve::hash_to_curve::sw_map::SWMap;
 use sha2::Sha256;
 
 use crate::KeyPair;
@@ -16,7 +16,7 @@ pub struct VRFProof<P: SWCurveConfig> {
 }
 
 impl<P: SWCurveConfig> VRFProof<P> {
-    pub fn verify<H: HashToCurve<P>>(&self, pk: &Projective<P>) -> bool {
+    pub fn verify<H: SWMap<P>>(&self, pk: &Projective<P>) -> bool {
         let mut buf = Vec::new();
         pk.serialize_uncompressed(&mut buf).unwrap();
         buf.extend_from_slice(&self.seed);

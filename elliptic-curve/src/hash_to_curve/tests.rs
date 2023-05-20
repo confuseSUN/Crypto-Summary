@@ -8,12 +8,13 @@ use sha2::Sha256;
 use std::ops::Neg;
 use std::ops::{Add, Div, Mul};
 
+use crate::hash_to_curve::secp256K1_sswu::Secp256K1SSWUMap;
 use crate::hash_to_curve::secp256K1_sw::Secp256K1SWMap;
-use crate::hash_to_curve::sw_map::HashToCurve;
-
+use crate::hash_to_curve::simplified_swu::SimplifiedSWUMap;
+use crate::hash_to_curve::sw_map::SWMap;
 
 #[test]
-fn test_hash_to_curve_for_secp256k1() {
+fn test_sw_map_for_secp256k1() {
     let msg = b"hello, hash to secp256k1 ";
     let point = Secp256K1SWMap::hash::<Sha256>(msg).unwrap();
 
@@ -24,6 +25,19 @@ fn test_hash_to_curve_for_secp256k1() {
     let expect_point = Affine::new_unchecked(x, y);
 
     assert!(expect_point.is_on_curve());
+
+    assert_eq!(point, expect_point);
+}
+
+#[test]
+fn test_sswu_map_for_secp256k1() {
+    let msg = b"hello, hash to secp256k1 ";
+    let point = Secp256K1SSWUMap::hash::<Sha256>(msg).unwrap();
+    assert!(point.is_on_curve());
+
+    let x = MontFp!("1672373759639960858606308045180002206679411716661669177762183422908424265407");
+    let y = MontFp!("4400625817773064282396843387176440459308006484529549293326923345542586245827");
+    let expect_point = Affine::new_unchecked(x, y);
 
     assert_eq!(point, expect_point);
 }

@@ -10,7 +10,7 @@ use std::ops::*;
 /// Trait for implementing a general Shallue–van de Woestijne map that is effective for most short Weierstrass equation g(x) = y^2 = x^3 + a * x +b.
 ///
 /// see <https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-16.html>
-pub trait HashToCurve<P: SWCurveConfig> {
+pub trait SWMap<P: SWCurveConfig> {
     /// Z is a non-zero element meeting the below criteria:
     /// 1. g(Z) != 0
     /// 2. -(3 * Z^2 + 4 * A) / (4 * g(Z)) != 0
@@ -47,7 +47,7 @@ pub trait HashToCurve<P: SWCurveConfig> {
         let tv4: P::BaseField = point.mul(&tv1).mul(&tv3).mul(&Self::c3());
 
         let x1: P::BaseField = Self::c2().sub(&tv4);
-        let gx1: P::BaseField = x1.mul(&x1).add(&a);
+        let gx1: P::BaseField = x1.square().add(&a);
         let gx1: P::BaseField = gx1.mul(&x1).add(&b);
         if gx1.legendre().is_qr() {
             let y: P::BaseField = gx1.sqrt().unwrap();
@@ -58,7 +58,7 @@ pub trait HashToCurve<P: SWCurveConfig> {
         }
 
         let x2: P::BaseField = Self::c2().add(&tv4);
-        let gx2: P::BaseField = x2.mul(&x2).add(&a);
+        let gx2: P::BaseField = x2.square().add(&a);
         let gx2: P::BaseField = gx2.mul(&x2).add(&b);
         if gx2.legendre().is_qr() {
             let y: P::BaseField = gx2.sqrt().unwrap();
@@ -68,9 +68,9 @@ pub trait HashToCurve<P: SWCurveConfig> {
             return Ok(point_on_curve);
         }
 
-        let x3: P::BaseField = tv2.mul(&tv2).mul(&tv3);
-        let x3: P::BaseField = x3.mul(&x3).mul(&Self::c4()).add(&Self::Z);
-        let gx3: P::BaseField = x3.mul(&x3).add(&a);
+        let x3: P::BaseField = tv2.square().mul(&tv3);
+        let x3: P::BaseField = x3.square().mul(&Self::c4()).add(&Self::Z);
+        let gx3: P::BaseField = x3.square().add(&a);
         let gx3: P::BaseField = gx3.mul(&x3).add(&b);
         if gx3.legendre().is_qr() {
             let y: P::BaseField = gx3.sqrt().unwrap();
