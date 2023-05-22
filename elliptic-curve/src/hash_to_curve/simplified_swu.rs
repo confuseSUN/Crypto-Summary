@@ -42,9 +42,9 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
         let gx1: P::BaseField = x1.square().add(&Self::A);
         let gx1: P::BaseField = gx1.mul(&x1).add(&Self::B);
         if gx1.legendre().is_qr() {
-            let y: P::BaseField = gx1.sqrt().unwrap();
+            let (x, y) = Self::isogeny_map(&x1, &gx1);
             let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
-            let point = Self::isogeny_map(&x1, &y);
+            let point = Affine::<P>::new_unchecked(x, y);
             return Ok(point);
         }
 
@@ -52,9 +52,9 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
         let gx2: P::BaseField = x2.square().add(&Self::A);
         let gx2: P::BaseField = gx2.mul(&x2).add(&Self::B);
         if gx2.legendre().is_qr() {
-            let y: P::BaseField = gx2.sqrt().unwrap();
+            let (x, y) = Self::isogeny_map(&x2, &gx2);
             let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
-            let point = Self::isogeny_map(&x2, &y);
+            let point = Affine::<P>::new_unchecked(x, y);
             return Ok(point);
         }
 
@@ -92,7 +92,8 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
         Ok(rand_subgroup_elem)
     }
 
-    fn isogeny_map(x: &P::BaseField, y: &P::BaseField) -> Affine<P>;
+    /// The isogeny map from isogeny curve to origin curve
+    fn isogeny_map(x: &P::BaseField, y: &P::BaseField) -> (P::BaseField, P::BaseField);
 
     /// The constant c1 equals ：
     /// c1 = - B/A

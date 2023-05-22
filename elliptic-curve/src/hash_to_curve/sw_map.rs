@@ -52,9 +52,8 @@ pub trait SWMap<P: SWCurveConfig> {
         if gx1.legendre().is_qr() {
             let y: P::BaseField = gx1.sqrt().unwrap();
             let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
-            let point_on_curve = Affine::<P>::new_unchecked(x1, y);
-            assert!(point_on_curve.is_on_curve());
-            return Ok(point_on_curve);
+            let point = Affine::<P>::new_unchecked(x1, y);
+            return Ok(point);
         }
 
         let x2: P::BaseField = Self::c2().add(&tv4);
@@ -63,9 +62,8 @@ pub trait SWMap<P: SWCurveConfig> {
         if gx2.legendre().is_qr() {
             let y: P::BaseField = gx2.sqrt().unwrap();
             let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
-            let point_on_curve = Affine::<P>::new_unchecked(x2, y);
-            assert!(point_on_curve.is_on_curve());
-            return Ok(point_on_curve);
+            let point = Affine::<P>::new_unchecked(x2, y);
+            return Ok(point);
         }
 
         let x3: P::BaseField = tv2.square().mul(&tv3);
@@ -75,9 +73,8 @@ pub trait SWMap<P: SWCurveConfig> {
         if gx3.legendre().is_qr() {
             let y: P::BaseField = gx3.sqrt().unwrap();
             let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
-            let point_on_curve = Affine::<P>::new_unchecked(x3, y);
-            assert!(point_on_curve.is_on_curve());
-            return Ok(point_on_curve);
+            let point = Affine::<P>::new_unchecked(x3, y);
+            return Ok(point);
         }
 
         Err("failed to hashing to the curve".to_string())
