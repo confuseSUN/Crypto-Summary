@@ -2,7 +2,7 @@ use ark_std::{rand::Rng, test_rng};
 use criterion::{criterion_group, criterion_main, Criterion};
 use elliptic_curve::hash_to_curve::{
     secp256K1_sswu::Secp256K1SSWUMap, secp256K1_sw::Secp256K1SWMap,
-    simplified_swu::SimplifiedSWUMap, sw_map::SWMap,
+    simplified_swu1::SimplifiedSWUMap, sw_map1::SWMap,
 };
 use sha2::Sha256;
 

@@ -4,7 +4,7 @@ use ark_ff::MontFp;
 use ark_secp256k1::Fq;
 use std::ops::*;
 
-use super::simplified_swu::SimplifiedSWUMap;
+use super::SimplifiedSWUMap;
 
 pub struct Secp256K1SSWUMap;
 

@@ -8,6 +8,10 @@ use ark_ff::One;
 use sha2::digest::DynDigest;
 use std::ops::*;
 
+/// Module for the secp256K1 instance of the Simplified SWU map"
+#[allow(non_snake_case)]
+pub mod secp256K1_sswu;
+
 /// Trait for implementing a Simplified Shallue-van de Woestijne-Ulas method that is effective for
 /// Weierstrass equation y^2 = x^3 + A * x +B where A != 0 and B != 0.
 ///

@@ -1,16 +1,10 @@
-use ark_ec::short_weierstrass::SWCurveConfig;
-use ark_ff::Field;
 use ark_ff::MontFp;
-use ark_ff::Zero;
 use ark_secp256k1::Affine;
-use ark_secp256k1::{Config, Fq};
 use sha2::Sha256;
-use std::ops::Neg;
-use std::ops::{Add, Div, Mul};
 
-use crate::hash_to_curve::secp256K1_sswu::Secp256K1SSWUMap;
-use crate::hash_to_curve::secp256K1_sw::Secp256K1SWMap;
+use crate::hash_to_curve::simplified_swu::secp256K1_sswu::Secp256K1SSWUMap;
 use crate::hash_to_curve::simplified_swu::SimplifiedSWUMap;
+use crate::hash_to_curve::sw_map::secp256K1_sw::Secp256K1SWMap;
 use crate::hash_to_curve::sw_map::SWMap;
 
 #[test]
@@ -37,50 +31,4 @@ fn test_sswu_map_for_secp256k1() {
         MontFp!("38146701389086009568131611577699099700782252859687674831782271987177742184954"),
     );
     assert_eq!(point, expect_point);
-}
-
-#[test]
-fn cal_z_for_secp256k1() {
-    let candidate = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5];
-
-    let a = Config::COEFF_A;
-    let b = Config::COEFF_B;
-    let two = Fq::from(2);
-    let three = Fq::from(3);
-    let four = Fq::from(4);
-
-    let four_a = four.mul(&a);
-
-    for x in candidate {
-        let z = Fq::from(x);
-
-        // require g(Z) != 0
-        let y = z.mul(&z).add(&a);
-        let y = y.mul(&z).add(&b);
-        if y == Fq::zero() {
-            continue;
-        }
-
-        // require -(3 * Z^2 + 4 * A) / (4 * g(Z)) != 0  and -(3 * Z^2 + 4 * A) / (4 * g(Z)) is square
-        let four_y = four.mul(&y);
-        let four_y_inv = four_y.inverse().unwrap();
-        let tmp = z.mul(&z).mul(&three).add(&four_a);
-        let tmp = tmp.neg();
-        let tmp = tmp.mul(&four_y_inv);
-        if tmp == Fq::zero() || !tmp.legendre().is_qr() {
-            continue;
-        }
-
-        // require at least one of g(Z) and g(-Z / 2) is square
-        let z_neg = z.neg();
-        let z_neg_div_two = z_neg.div(&two);
-        let y1 = z_neg_div_two.mul(&z_neg_div_two).add(&a);
-        let y1 = y1.mul(&z_neg_div_two).add(&b);
-
-        if !y.legendre().is_qr() && !y1.legendre().is_qr() {
-            continue;
-        }
-
-        println!("z: {}", x);
-    }
 }

@@ -7,7 +7,12 @@ use ark_ff::Field;
 use sha2::digest::DynDigest;
 use std::ops::*;
 
-/// Trait for implementing a general Shallue–van de Woestijne map that is effective for most short Weierstrass equation g(x) = y^2 = x^3 + a * x +b.
+/// Module for the secp256K1 instance of the SW map"
+#[allow(non_snake_case)]
+pub mod secp256K1_sw;
+
+/// Trait for implementing a general Shallue–van de Woestijne map that is effective for most short Weierstrass form of:
+/// g(x) = y^2 = x^3 + a * x +b.
 ///
 /// see <https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-16.html>
 pub trait SWMap<P: SWCurveConfig> {

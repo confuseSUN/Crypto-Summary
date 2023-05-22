@@ -4,7 +4,7 @@ use ark_ec::{AffineRepr, Group};
 use ark_ff::MontFp;
 use ark_secp256k1::Fq;
 use ark_std::test_rng;
-use elliptic_curve::hash_to_curve::{secp256K1_sw::Secp256K1SWMap, sw_map::SWMap};
+use elliptic_curve::hash_to_curve::sw_map::secp256K1_sw::Secp256K1SWMap;
 
 use crate::KeyPair;
 
