@@ -21,7 +21,7 @@ impl<P: SWCurveConfig> VRFProof<P> {
         pk.serialize_uncompressed(&mut buf).unwrap();
         buf.extend_from_slice(&self.seed);
 
-        let h = H::hash::<Sha256>(&buf).unwrap();
+        let h = H::hash::<Sha256>(&buf);
 
         // u = c * PK + s * G
         let u: Projective<P> = pk.mul(&self.c).add(P::GENERATOR.mul(&self.s));

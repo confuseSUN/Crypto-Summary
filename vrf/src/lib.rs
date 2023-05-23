@@ -42,7 +42,7 @@ impl<P: SWCurveConfig> KeyPair<P> {
         buf.extend_from_slice(seed);
 
         // 1. h = HTC(PK || seed)
-        let h = H::hash::<Sha256>(&buf).unwrap();
+        let h: Projective<P> = H::hash::<Sha256>(&buf);
 
         // 2. gamma = h * SK
         let gamma = h.mul(&self.private_key);

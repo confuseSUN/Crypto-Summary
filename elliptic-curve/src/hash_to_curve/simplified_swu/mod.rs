@@ -1,7 +1,8 @@
 use ark_ec::hashing::curve_maps::swu::parity;
 use ark_ec::short_weierstrass::Affine;
+use ark_ec::short_weierstrass::Projective;
 use ark_ec::short_weierstrass::SWCurveConfig;
-use ark_ec::AffineRepr;
+use ark_ec::Group;
 use ark_ff::field_hashers::{DefaultFieldHasher, HashToField};
 use ark_ff::Field;
 use ark_ff::One;
@@ -34,35 +35,28 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
 
     /// Mapping an arbitrary field element to a point on the elliptic curve,
     /// This step matching step 2 and step 3
-    fn map_to_curve(u: &P::BaseField) -> Result<Affine<P>, String> {
-        let one: P::BaseField = P::BaseField::one();
+    fn map_to_curve(u: &P::BaseField) -> Affine<P> {
+        let u2_mul_z: P::BaseField = u.square().mul(&Self::Z);
+        let u4_mul_z2: P::BaseField = u2_mul_z.square();
+        let tv1: P::BaseField = u2_mul_z.add(&u4_mul_z2).inverse().unwrap();
 
-        let p2_mul_z: P::BaseField = u.square().mul(&Self::Z);
-        let p4_mul_z2: P::BaseField = p2_mul_z.square();
-        let tv1: P::BaseField = p2_mul_z.add(&p4_mul_z2);
-        let tv1: P::BaseField = tv1.inverse().unwrap();
-
-        let x1: P::BaseField = Self::c1().mul(&tv1.add(&one));
+        let x1: P::BaseField = Self::c1().mul(&tv1.add(&P::BaseField::one()));
         let gx1: P::BaseField = x1.square().add(&Self::A);
         let gx1: P::BaseField = gx1.mul(&x1).add(&Self::B);
         if gx1.legendre().is_qr() {
             let (x, y) = Self::isogeny_map(&x1, &gx1);
             let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
             let point = Affine::<P>::new_unchecked(x, y);
-            return Ok(point);
+            return point;
         }
 
-        let x2: P::BaseField = p2_mul_z.mul(&x1);
+        let x2: P::BaseField = u2_mul_z.mul(&x1);
         let gx2: P::BaseField = x2.square().add(&Self::A);
         let gx2: P::BaseField = gx2.mul(&x2).add(&Self::B);
-        if gx2.legendre().is_qr() {
-            let (x, y) = Self::isogeny_map(&x2, &gx2);
-            let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
-            let point = Affine::<P>::new_unchecked(x, y);
-            return Ok(point);
-        }
-
-        Err("failed to hashing to the curve".to_string())
+        let (x, y) = Self::isogeny_map(&x2, &gx2);
+        let y: P::BaseField = if parity(&y) != parity(u) { -y } else { y };
+        let point = Affine::<P>::new_unchecked(x, y);
+        return point;
     }
 
     /// Mapping an arbitrary message to a field element,
@@ -84,16 +78,16 @@ pub trait SimplifiedSWUMap<P: SWCurveConfig> {
     /// step 4 : R = Q0 + Q1
     /// step 5 : P = clear_cofactor(R)
     /// step 6 : return P
-    fn hash<H: Default + DynDigest + Clone>(msg: &[u8]) -> Result<Affine<P>, String> {
+    fn hash<H: Default + DynDigest + Clone>(msg: &[u8]) -> Projective<P> {
         let rand_field_elems: Vec<P::BaseField> = Self::hash_to_field::<H>(msg, Self::DST);
 
-        let rand_curve_elem_0 = Self::map_to_curve(&rand_field_elems[0])?;
-        let rand_curve_elem_1 = Self::map_to_curve(&rand_field_elems[1])?;
+        let rand_curve_elem_0 = Self::map_to_curve(&rand_field_elems[0]);
+        let rand_curve_elem_1 = Self::map_to_curve(&rand_field_elems[1]);
 
-        let rand_curve_elem: Affine<P> = rand_curve_elem_0.add(&rand_curve_elem_1).into();
-        let rand_subgroup_elem = rand_curve_elem.clear_cofactor();
+        let rand_curve_elem: Projective<P> = rand_curve_elem_0.add(&rand_curve_elem_1);
+        let rand_subgroup_elem = rand_curve_elem.mul_bigint(P::COFACTOR);
 
-        Ok(rand_subgroup_elem)
+        rand_subgroup_elem
     }
 
     /// The isogeny map from isogeny curve to origin curve
