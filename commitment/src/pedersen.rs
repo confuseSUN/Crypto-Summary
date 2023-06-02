@@ -34,6 +34,6 @@ impl<C: CurveGroup> Pedersen<C> {
             return Err(format!("maximum commitment is {}", params.g.len()));
         }
 
-        Ok((C::msm_unchecked(&params.g, v) + params.h * r).into())
+        Ok((C::msm_unchecked(&params.g[..v.len()], v) + params.h * r).into())
     }
 }
